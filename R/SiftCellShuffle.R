@@ -60,7 +60,6 @@ SiftCellShuffle = function(workingdir)
   writeMM(shuffleDGE,file = "matrix.mtx")
   write.table(genes, file = "genes.tsv", row.names=FALSE, sep="\t")
   write.table(barcodes, file = "barcodes.tsv", row.names=FALSE, sep="\t")
-
 }
 
 
