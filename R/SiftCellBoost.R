@@ -4,7 +4,7 @@
 # library(SparseM)
 # library(reticulate)
 
-devtools::install_github("Yichen-Si/squat",ref ="gamma",force=TRUE)
+#devtools::install_github("Yichen-Si/squat",ref ="gamma",force=TRUE)
 
 #use_virtualenv("r-tensorflow")
 
@@ -322,6 +322,7 @@ detectHVG = function(rawDGE,geneUMIthreshold=50)  #do we need an option to choos
 #' @param N.PCs PCs
 #' @param geneUMIthreshold genes less than the threshold is discarded
 #' @param seed seed for randomization
+#' @import reticulate
 #' @export
 SiftCellBoost = function(workingdir,threshold=100,expectedN=1000,dataName="Sample",mitoGenes = TRUE, otherFlagGenes=NULL,N.PCs = 100,geneUMIthreshold=50,seed=0)
 {
@@ -349,6 +350,9 @@ SiftCellBoost = function(workingdir,threshold=100,expectedN=1000,dataName="Sampl
   dataset = labelData(rawDGE,shfDGE,rawPC,shfPC,HVG,flagCells,outlier,dataName,expectedN)
   labeledData = dataset$LabelData
   predData = dataset$PredData
+  #path = paste(system.file(package="SiftCesll/inst"), "the_py_module", sep="/")
+  #command = paste("python", path, a, b, sep = " ")
+  #try(suppressWarnings(response <- system(command, intern=T)), silent = T)
   #source_python('/Users/jyxi/Documents/rescue/coding/runXGboost.py')
   #siftCellInfer = Xgboost(labeledData,predData,dataName)
 
@@ -356,8 +360,46 @@ SiftCellBoost = function(workingdir,threshold=100,expectedN=1000,dataName="Sampl
 
 
 
+#' the function is a demo
+#' @export
+skip_if_no_scipy <- function() {
+  have_scipy <- py_module_available("scipy")
+  if (!have_scipy)
+    skip("scipy not available for testing")
+}
 
 
+
+#' the function is a demo
+#' @param a number
+#' @param b number
+#' @import reticulate
+#' @export
+pydemo = function(a,b)
+{
+  py_packages = c("pandas","scipy","sklearn")
+  for (i in py_packages)
+  {
+
+    #print(i)
+    if (!py_module_available(i))
+      py_install(i,pip=T)
+
+  }
+ # py_install("pandas",pip=T)
+  #py_install("scipy",pip=T)
+  #py_install("sklearn",pip=T)
+  #py_install("xgboost",pip=T)
+
+
+  path = paste(system.file(package="SiftCell"), "the_py_module.py", sep="/")
+  command = paste("python", path, a, b, sep = " ")
+  print(command)
+  #try(suppressWarnings(response <- system(command, intern=T)), silent = T)
+  try(suppressWarnings(response <- system(command, intern=T)), silent = T)
+  print(response)
+
+}
 
 
 
