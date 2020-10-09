@@ -13,7 +13,8 @@ SiftCellBoost(
   otherFlagGenes = NULL,
   N.PCs = 100,
   geneUMIthreshold = 50,
-  seed = 0
+  seed = 0,
+  quantileReg = FALSE
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ SiftCellBoost(
 \item{geneUMIthreshold}{genes less than the threshold is discarded}
 
 \item{seed}{seed for randomization}
+
+\item{quantileReg}{default if use top 1000 HVG}
 }
 \description{
 This function runs SiftCell-Boost, it generates a file of barcode of infered cell-containing droplets

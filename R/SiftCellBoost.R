@@ -1,18 +1,7 @@
-#
-# library(Matrix)
-# library(quantreg)
-# library(SparseM)
-# library(reticulate)
-
-#devtools::install_github("Yichen-Si/squat",ref ="gamma",force=TRUE)
-
-#use_virtualenv("r-tensorflow")
-
-#This function is modified from Seurat
-#' function that read the digital expression matrix(either original DGE or shuffled DGE;)
-#' @param datadir the directory that includes the digital expression matrix. Version2 & Version 3??
-#' @importFrom utils read.delim
+#' This function read the DGE
+#' @param datadir the directory that includes the digital expression matrix. Version2 & Version 3
 #' @return a matrix
+#' @importFrom utils read.delim
 #' @export
 readDGE = function(datadir = NULL)
 {
@@ -94,7 +83,6 @@ prepData = function(workingdir,UMIthreshold=100)
 
 }
 
-#' TIMING SPEED UP A LITTLE BIT??
 #' The function detects the droplet barcode that are flag Cells marked by its expression of flag genes>median+3sd
 #' @param mitoGenes If TRUE, mitochondrial genes will be flagged genes, regardless of mouse mt or human mt.
 #' @param rawDGE the originalDGE that returned from prepareData function
@@ -125,7 +113,7 @@ detectFlagCells = function(rawDGE,mitoGenes = TRUE, otherFlagGenes=NULL)
   #print(pattern)
   if(is.null(pattern))
   {
-    flagCells = colnames(rawDGE)
+    flagCells = NULL
   }
   else
   {
@@ -241,12 +229,17 @@ labelData = function(rawDGE,shfDGE,rawPC,shfPC,HVG,flagCells,outlier,dataName,ex
 
   ind1 = match(paste0(dataName,"Org_",outlier), rownames(rawPC))
   ind2 = match(paste0(dataName,"Org_",flagCells),rownames(rawPC))
-  labelData = as.data.frame(rbind(rawPC[ind1,],rawPC[ind2,],shfPC))
-  labelData$label = "Soup"
-  labelData[1:length(ind1),"label"] = "Nonsoup"
-  labelData$label = as.factor(labelData$label)
+  data = rbind(rawPC[ind1,],rawPC[ind2,],shfPC)
+  label = c(rep("Soup",dim(data)[1]))
+  label[1:length(ind1)] = "Nonsoup"
+  labeledData = list("data" = data,"label" = label)
   predData = rawPC[-c(ind1,ind2),]
-  my_list = list("LabelData" = labelData , "PredData" = predData)
+
+  # labelData$label = "Soup"
+  # labelData[1:length(ind1),"label"] = "Nonsoup"
+  # labelData$label = as.factor(labelData$label)
+  # predData = rawPC[-c(ind1,ind2),]
+  my_list = list("LabelData" = labeledData , "PredData" = predData)
   return(my_list)
 }
 
@@ -273,6 +266,7 @@ detectOutlier = function(rawDGE, rawCounts, expectedN=1000)
   squat_z = apply(rawDGE,2,function(x) {squat_binom_overdisp_test(x,rep(sum(x),length(x)),p0,ws)})
   squat_log10p = 0-pnorm(squat_z,lower.tail = FALSE,log.p = T) / log(10)
   df = data.frame("BARCODE" = colnames(rawDGE), "rankUMI" =  rank(-UMIs,ties.method = "random"),"rankScore" = rank(-squat_z,ties.method="random"))
+  #NA happenes here, please correct them!!!!!!
   #outlier determined by nonparametric ranking
   outlier = df[df$rankUMI<=expectedN & df$rankScore <=expectedN,]
   return(outlier$BARCODE)
@@ -282,13 +276,13 @@ detectOutlier = function(rawDGE, rawCounts, expectedN=1000)
 #' This function detect highly variable genes via package "Squat"
 #' @param rawDGE digital expression matrix of the original data
 #' @param geneUMIthreshold focus on genes with total UMI bigger than the threshold
+#' @param quantileReg Default is False. Top 1000 genes is selected
 #' @import squat
 #' @import quantreg
 #' @return returns xxx
 #' @export
-detectHVG = function(rawDGE,geneUMIthreshold=50)  #do we need an option to choose the hvg?
+detectHVG = function(rawDGE,geneUMIthreshold=50,quantileReg = FALSE)  #do we need an option to choose the hvg?
 {
-
   mtx_org = rawDGE[rowSums(rawDGE)>geneUMIthreshold,]
   mtx_org = as.matrix(mtx_org) #to save time
   p0_org = rowSums(mtx_org) / sum(mtx_org)
@@ -297,13 +291,23 @@ detectHVG = function(rawDGE,geneUMIthreshold=50)  #do we need an option to choos
   zs_org = sapply(1:nrow(mtx_org),function(i) {squat_binom_overdisp_test(mtx_org[i,],sizes,rep(p0_org[i],dim(mtx_org)[2]),ws)}) #NA occurs, need to solve the issue
   df = data.frame("gene"=rownames(mtx_org),"geneUMI" = rowSums(mtx_org),"zs" = zs_org,"log10.p" = 0-pnorm(zs_org,log.p=T,lower.tail = F)/log(10))
   df = df[complete.cases(df),] #remove NAs
-  Dat = NULL; Dat$x = df$geneUMI
-  Dat$y = df$log10.p
-  Dat.nlrq = nlrq(y ~ SSlogis(x, Asym, mid, scal), data=Dat, tau=0.8, trace=FALSE)
-  predicted=predict(Dat.nlrq, newdata=list(x=Dat$x))
-  #Dat$predicted = predicted
-  #Dat = as.data.frame(Dat)
-  hvg = df$gene[df$log10.p>predicted] #add a paramter Pcutoff
+  if(quantileReg)
+  {
+    Dat = NULL; Dat$x = df$geneUMI
+    Dat$y = df$log10.p
+    Dat.nlrq = nlrq(y ~ SSlogis(x, Asym, mid, scal), data=Dat, tau=0.8, trace=FALSE)
+    predicted=predict(Dat.nlrq, newdata=list(x=Dat$x))
+    #Dat$predicted = predicted
+    #Dat = as.data.frame(Dat)
+    hvg = df$gene[df$log10.p>predicted] #add a paramter Pcutoff
+  }
+
+  else
+  {
+    hvg_order = df$gene[order(df$log10.p,decreasing = T)]
+    hvg = hvg_order[1:1000]
+  }
+
   return(hvg)
   #hvg = df$gene[df$log10.p>predicted &df$log10.p > Pcutoff ]
   #ggplot(Dat,aes(x = x,y=y+1))+geom_point(size=0.5,alpha=0.3)+ geom_point( aes(x=(x), y=(predicted+1)), data = Dat,colour = "red")+scale_x_log10()+scale_y_log10()
@@ -311,6 +315,33 @@ detectHVG = function(rawDGE,geneUMIthreshold=50)  #do we need an option to choos
 
 
 
+#' This function source python code and run XGBoost
+#' @param train_path path of training data
+#' @param test_path path of test data
+#' @param workingdir working directory
+#' @param dataName name of the project
+#' @return a vector of cell containing droplets
+#' @import reticulate
+#' @export
+runXGBoostPy = function(train_path,test_path,workingdir,dataName)
+{
+  py_packages = c("pandas","scipy","sklearn","xgboost","sys","os")
+  for (i in py_packages)
+  {
+
+    #print(i)
+    if (!py_module_available(i))
+      py_install(i,pip=T)
+
+  }
+
+
+  path = paste(system.file(package="SiftCell"), "runXGboost.py", sep="/")
+  command = paste("python", path, train_path, test_path, workingdir,dataName,sep = " ")
+  response <- system(command, intern=T)
+  try(suppressWarnings(response <- system(command, intern=T)), silent = T)
+
+}
 
 #' This function runs SiftCell-Boost, it generates a file of barcode of infered cell-containing droplets
 #' @param workingdir working director with DGE and shuffleDGE two folders. Within DGE or shuffleDGE foler,
@@ -322,16 +353,19 @@ detectHVG = function(rawDGE,geneUMIthreshold=50)  #do we need an option to choos
 #' @param N.PCs PCs
 #' @param geneUMIthreshold genes less than the threshold is discarded
 #' @param seed seed for randomization
+#' @param quantileReg default if use top 1000 HVG
 #' @import reticulate
+#' @importFrom utils write.csv
 #' @export
-SiftCellBoost = function(workingdir,threshold=100,expectedN=1000,dataName="Sample",mitoGenes = TRUE, otherFlagGenes=NULL,N.PCs = 100,geneUMIthreshold=50,seed=0)
+SiftCellBoost = function(workingdir,threshold=100,expectedN=1000,dataName="Sample",mitoGenes = TRUE, otherFlagGenes=NULL,N.PCs = 100,geneUMIthreshold=50,seed=0,quantileReg=FALSE)
 {
   if(is.null(seed))
   {
     set.seed(as.numeric(Sys.time()))
   }
-  # add loading bar
+
   #read original and shuffled data
+  print("Read DGE files")
   files = prepData(workingdir,threshold)
   rawDGE = files$originalDGE
   shfDGE = files$shuffleDGE
@@ -339,35 +373,33 @@ SiftCellBoost = function(workingdir,threshold=100,expectedN=1000,dataName="Sampl
   N = dim(rawDGE)[2]
   #detect flag cells
   flagCells = detectFlagCells(rawDGE,mitoGenes,otherFlagGenes)
+
+  print("Detect positive labeles")
   #detect droplets with pseudo positive labeles
   outlier = detectOutlier(rawDGE,rawCounts,expectedN)
-  HVG = detectHVG(rawDGE,geneUMIthreshold)
+  print("Detect Highly Variable Genes")
+  HVG = detectHVG(rawDGE,geneUMIthreshold,quantileReg)
+
+  print("Principlal Component Analysis")
   #get PCs of the HVG for both original and shuffled data
   pca = suppressWarnings(runPCA(rawDGE,shfDGE,HVG,log=TRUE,dataName, retx = TRUE, center = TRUE, scale = TRUE,N.PCs))
   rawPC = pca$x[1:N,]
   shfPC = pca$x[(N+1):(2*N),]
+
+  print("Run XGBoost")
   #generate pseudo-labeles
   dataset = labelData(rawDGE,shfDGE,rawPC,shfPC,HVG,flagCells,outlier,dataName,expectedN)
   labeledData = dataset$LabelData
   predData = dataset$PredData
-  #path = paste(system.file(package="SiftCesll/inst"), "the_py_module", sep="/")
-  #command = paste("python", path, a, b, sep = " ")
-  #try(suppressWarnings(response <- system(command, intern=T)), silent = T)
-  #source_python('/Users/jyxi/Documents/rescue/coding/runXGboost.py')
-  #siftCellInfer = Xgboost(labeledData,predData,dataName)
+  lb_path = paste0(workingdir,"/labeledData.csv")
+  pd_path = paste0(workingdir,"/predData.csv")
+  write.csv(labeledData,lb_path)
+  write.csv(predData,pd_path)
+  runXGBoostPy(lb_path,pd_path,workingdir,dataName)
+
+  print("Done!")
 
 }
-
-
-
-#' the function is a demo
-#' @export
-skip_if_no_scipy <- function() {
-  have_scipy <- py_module_available("scipy")
-  if (!have_scipy)
-    skip("scipy not available for testing")
-}
-
 
 
 #' the function is a demo
@@ -377,29 +409,23 @@ skip_if_no_scipy <- function() {
 #' @export
 pydemo = function(a,b)
 {
-  py_packages = c("pandas","scipy","sklearn")
+  py_packages = c("pandas","scipy","sklearn","xgboost")
   for (i in py_packages)
   {
 
-    #print(i)
     if (!py_module_available(i))
       py_install(i,pip=T)
 
   }
- # py_install("pandas",pip=T)
-  #py_install("scipy",pip=T)
-  #py_install("sklearn",pip=T)
-  #py_install("xgboost",pip=T)
-
 
   path = paste(system.file(package="SiftCell"), "the_py_module.py", sep="/")
   command = paste("python", path, a, b, sep = " ")
   print(command)
-  #try(suppressWarnings(response <- system(command, intern=T)), silent = T)
   try(suppressWarnings(response <- system(command, intern=T)), silent = T)
   print(response)
-
 }
+
+
 
 
 
