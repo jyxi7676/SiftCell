@@ -10,7 +10,8 @@ Please follow the following steps
 	- Latest version of R is required; Is' better to install the latest version of python, but not required.
 - Installation
   	- Install the released version of SiftCell from github
-  	- ```
+  	- 
+  	```ruby
   	install.packages("devtools")
   	library(devtools)
   	install_github("jyxi7676/SiftCell")
@@ -22,9 +23,9 @@ Please follow the following steps
 
 ## Usage
 - An example is given to show how to run SiftCell framework
-- SiftCell-Shuffle
-- SiftCell-Boost
-- SiftCell-Bayes
+	- SiftCell-Shuffle
+	- SiftCell-Boost
+	- SiftCell-Bayes
 
 ---
 
