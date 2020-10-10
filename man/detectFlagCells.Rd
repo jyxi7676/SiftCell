@@ -2,8 +2,7 @@
 % Please edit documentation in R/SiftCellBoost.R
 \name{detectFlagCells}
 \alias{detectFlagCells}
-\title{TIMING SPEED UP A LITTLE BIT??
-The function detects the droplet barcode that are flag Cells marked by its expression of flag genes>median+3sd}
+\title{The function detects the droplet barcode that are flag Cells marked by its expression of flag genes>median+3sd}
 \usage{
 detectFlagCells(rawDGE, mitoGenes = TRUE, otherFlagGenes = NULL)
 }
@@ -19,6 +18,5 @@ extra flaggens that characterize unwanted cells.}
 this function returns a vector with barcodes of flag cells
 }
 \description{
-TIMING SPEED UP A LITTLE BIT??
 The function detects the droplet barcode that are flag Cells marked by its expression of flag genes>median+3sd
 }

@@ -4,7 +4,14 @@
 \alias{SiftCellBayes}
 \title{This function runs SiftCellBayes}
 \usage{
-SiftCellBayes(workingdir, celltype, alpha, threshold = 100, ub_p = 1, lb_p = 0)
+SiftCellBayes(
+  workingdir,
+  celltype,
+  alpha = 0.01,
+  threshold = 100,
+  ub_p = 1,
+  lb_p = 0
+)
 }
 \arguments{
 \item{workingdir}{directory with DGE files}

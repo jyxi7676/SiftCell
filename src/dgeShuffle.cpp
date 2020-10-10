@@ -5,7 +5,7 @@
 #include <time.h>
 #include <set>
 #include <Rcpp.h>
-//#include <bits/stdc++.h>
+
 using namespace Rcpp;
 using namespace std;
 
@@ -14,8 +14,18 @@ using namespace std;
 // dge-shuffle : Shuffle digital expression matrix
 // Author: Hyunmin Kang&Jingyue Xi
 ////////////////////////////////////////////////////////////////////////
+//' This function generate shuffled DGE
+//' @param n_genes number of genes
+//' @param n_bcds number of barcodes
+//' @param num_nonzeros number of non-zero umis
+//' @param numis vector of umis
+//' @param geneInd vector of gene index
+//' @param barcodeInd index of barcoders
+//' @param totalumi sum of umis
+//' @return a list
+//' @export
 // [[Rcpp::export]]
-List dgeShuffle(int n_genes, int n_bcds, int num_nonzeros, NumericVector& numis,NumericVector& geneInd, NumericVector& barcodeInd,int totalumi)
+List dgeShuffle(int n_genes, int n_bcds, int num_nonzeros, NumericVector numis,NumericVector geneInd, NumericVector barcodeInd,int totalumi)
 {
   int iumi=0;
   //int seed = 0;

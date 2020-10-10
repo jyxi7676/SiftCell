@@ -4,12 +4,14 @@
 \alias{detectHVG}
 \title{This function detect highly variable genes via package "Squat"}
 \usage{
-detectHVG(rawDGE, geneUMIthreshold = 50)
+detectHVG(rawDGE, geneUMIthreshold = 50, quantileReg = FALSE)
 }
 \arguments{
 \item{rawDGE}{digital expression matrix of the original data}
 
 \item{geneUMIthreshold}{focus on genes with total UMI bigger than the threshold}
+
+\item{quantileReg}{Default is False. Top 1000 genes is selected}
 }
 \value{
 returns xxx

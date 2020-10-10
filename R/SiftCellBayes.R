@@ -4,6 +4,7 @@
 #' @param celltype dataframe with celltype information, 1st coloum is barcode, 2nd column is celltype
 #' @param alpha scale between 0 and 1 used to adjust 0 value in gene profile for droplets with celltype infomation
 #' @return a matrix with gene profile for all the celltypes and soup
+#' @export
 getGeneProfile = function(mtx, celltype,alpha=0.01)
 {
  colnames(celltype) = c("BARCODE","TYPE")
@@ -108,7 +109,8 @@ getP = function(geneProfile,mtx,threshold=100,seed = 0, ub_p=1, lb_p=0)
 #' @param ub_p upper bound of proportion. Default is 1
 #' @param lb_p lower bound of proportion. Default is 0
 #' @return estimated proportion
-SiftCellBayes = function(workingdir,celltype,alpha,threshold=100,ub_p=1, lb_p=0)
+#' @export
+SiftCellBayes = function(workingdir,celltype,alpha=0.01,threshold=100,ub_p=1, lb_p=0)
 {
   if (dir.exists(workingdir))
   {setwd(workingdir)

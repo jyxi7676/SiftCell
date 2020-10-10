@@ -2,16 +2,16 @@
 % Please edit documentation in R/SiftCellBoost.R
 \name{readDGE}
 \alias{readDGE}
-\title{function that read the digital expression matrix(either original DGE or shuffled DGE;)}
+\title{This function read the DGE}
 \usage{
 readDGE(datadir = NULL)
 }
 \arguments{
-\item{datadir}{the directory that includes the digital expression matrix. Version2 & Version 3??}
+\item{datadir}{the directory that includes the digital expression matrix. Version2 & Version 3}
 }
 \value{
 a matrix
 }
 \description{
-function that read the digital expression matrix(either original DGE or shuffled DGE;)
+This function read the DGE
 }
