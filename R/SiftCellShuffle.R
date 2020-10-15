@@ -63,8 +63,14 @@ SiftCellShuffle = function(workingdir)
   dir.create(file.path(workingdir, subDir), showWarnings = FALSE)
   setwd(file.path(workingdir, subDir))
   writeMM(shuffleDGE,file = "matrix.mtx")
-  write.table(genes[uniq_geneInd,], file = "genes.tsv", row.names=FALSE,col.names = FALSE, sep="\t",quote = F)
-  write.table(barcodes[uniq_barcInd,], file = "barcodes.tsv", row.names=FALSE,col.names = FALSE, sep="\t",quote=F)
+  unig = unique(shuffle$igenes)
+  unig = unig[order(unig,decreasing = F)]
+  unib = unique(shuffle$ibcds)
+
+
+
+  write.table(genes[unig,], file = "genes.tsv", row.names=FALSE,col.names = FALSE, sep="\t",quote = F)
+  write.table(barcodes[unib,], file = "barcodes.tsv", row.names=FALSE,col.names = FALSE, sep="\t",quote=F)
 }
 
 
