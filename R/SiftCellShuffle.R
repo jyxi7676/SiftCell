@@ -45,8 +45,11 @@ SiftCellShuffle = function(workingdir)
   geneInd = spm$Part1[-1]
   barcodeInd = spm$Part2[-1]
   totalumi = sum(numis)
+  uniq_geneInd = unique(geneInd)
+  uniq_barcInd = unique(barcodeInd)
+
   tic()
-  shuffle=dgeShuffle(length(unique(geneInd)),length(unique(barcodeInd)),sum(numis!=0),numis,geneInd,barcodeInd,totalumi)
+  shuffle=dgeShuffle(length(uniq_geneInd),length(uniq_barcInd),sum(numis!=0),numis,geneInd,barcodeInd,totalumi)
   toc()  #121second good!
   shuffleDGE = sparseMatrix(
     i = shuffle$igenes,
@@ -54,12 +57,14 @@ SiftCellShuffle = function(workingdir)
     x = shuffle$umi
   )
 
+  shuffleDGE = shuffleDGE[rowSums(shuffleDGE)>0,]
+  shuffleDGE = shuffleDGE[,colSums(shuffleDGE)>0]
   subDir = "shuffleDGE"
   dir.create(file.path(workingdir, subDir), showWarnings = FALSE)
   setwd(file.path(workingdir, subDir))
   writeMM(shuffleDGE,file = "matrix.mtx")
-  write.table(genes, file = "genes.tsv", row.names=FALSE,col.names = FALSE, sep="\t")
-  write.table(barcodes, file = "barcodes.tsv", row.names=FALSE,col.names = FALSE, sep="\t")
+  write.table(genes[uniq_geneInd,], file = "genes.tsv", row.names=FALSE,col.names = FALSE, sep="\t",quote = F)
+  write.table(barcodes[uniq_barcInd,], file = "barcodes.tsv", row.names=FALSE,col.names = FALSE, sep="\t",quote=F)
 }
 
 
