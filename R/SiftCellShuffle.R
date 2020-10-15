@@ -58,8 +58,8 @@ SiftCellShuffle = function(workingdir)
   dir.create(file.path(workingdir, subDir), showWarnings = FALSE)
   setwd(file.path(workingdir, subDir))
   writeMM(shuffleDGE,file = "matrix.mtx")
-  write.table(genes, file = "genes.tsv", row.names=FALSE, sep="\t")
-  write.table(barcodes, file = "barcodes.tsv", row.names=FALSE, sep="\t")
+  write.table(genes, file = "genes.tsv", row.names=FALSE,col.names = FALSE, sep="\t")
+  write.table(barcodes, file = "barcodes.tsv", row.names=FALSE,col.names = FALSE, sep="\t")
 }
 
 
