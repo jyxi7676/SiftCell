@@ -16,9 +16,9 @@ SiftCellShuffle = function(workingdir)
   geneDir = paste0(workingdir,"DGE/genes.tsv")
   barcodes = read.table(barcodeDir,sep = '\t', header = F)
   genes = read.table(geneDir,sep = '\t', header = F)
-  
+  genes$V2=make.unique(names = genes$V2)
   #replace dot with underscore in gene names
-  genes$V2 = gsub(".", "-", genes$V2, fixed = TRUE)
+  #genes$V2 = gsub(".", "-", genes$V2, fixed = TRUE)
 
 
 
@@ -70,14 +70,14 @@ SiftCellShuffle = function(workingdir)
   unib = unique(shuffle$ibcds)
 
 
-  print(head(unig))
+#   print(head(unig))
   
-  print(grep("Y-RNA",genes$V2,value=T))
-  print(grep("Y-RNA",genes[unig,]$V2,value=T))
+#   print(grep("Y-RNA",genes$V2,value=T))
+#   print(grep("Y-RNA",genes[unig,]$V2,value=T))
 
   write.table(genes[unig,], file = "genes.tsv", row.names=FALSE,col.names = FALSE, sep="\t",quote = F)
   write.table(barcodes[unib,], file = "barcodes.tsv", row.names=FALSE,col.names = FALSE, sep="\t",quote=F)
-  write.table(genes, file = geneDir, row.names=FALSE,col.names = FALSE, sep="\t",quote = F)
+ # write.table(genes, file = geneDir, row.names=FALSE,col.names = FALSE, sep="\t",quote = F)
 
 }
 
