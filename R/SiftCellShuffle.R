@@ -77,6 +77,8 @@ SiftCellShuffle = function(workingdir)
 
   write.table(genes[unig,], file = "genes.tsv", row.names=FALSE,col.names = FALSE, sep="\t",quote = F)
   write.table(barcodes[unib,], file = "barcodes.tsv", row.names=FALSE,col.names = FALSE, sep="\t",quote=F)
+  setwd(workingdir)
+
  # write.table(genes, file = geneDir, row.names=FALSE,col.names = FALSE, sep="\t",quote = F)
 
 }
