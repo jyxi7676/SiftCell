@@ -1,5 +1,3 @@
-
-
 #library(Matrix)
 #library(reshape2)
 #' The function generate shuffleDGE
@@ -21,7 +19,6 @@ SiftCellShuffle = function(workingdir)
   
   #replace dot with underscore in gene names
   genes$V2 = gsub(".", "-", genes$V2, fixed = TRUE)
-  write.table(genes, file = "DGE/genes.tsv", row.names=FALSE,col.names = FALSE, sep="\t",quote = F)
 
 
 
@@ -76,6 +73,8 @@ SiftCellShuffle = function(workingdir)
 
   write.table(genes[unig,], file = "genes.tsv", row.names=FALSE,col.names = FALSE, sep="\t",quote = F)
   write.table(barcodes[unib,], file = "barcodes.tsv", row.names=FALSE,col.names = FALSE, sep="\t",quote=F)
+  write.table(genes, file = "DGE/genes.tsv", row.names=FALSE,col.names = FALSE, sep="\t",quote = F)
+
 }
 
 
