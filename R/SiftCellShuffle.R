@@ -52,7 +52,7 @@ SiftCellShuffle = function(workingdir)
 
   tic()
   shuffle=dgeShuffle(length(uniq_geneInd),length(uniq_barcInd),sum(numis!=0),numis,geneInd,barcodeInd,totalumi)
-  toc()  #121second good!
+  toc()  
   shuffleDGE = sparseMatrix(
     i = shuffle$igenes,
     j = shuffle$ibcds,
@@ -70,6 +70,10 @@ SiftCellShuffle = function(workingdir)
   unib = unique(shuffle$ibcds)
 
 
+  print(head(unig))
+  
+  print(grep("Y-RNA",genes$V2))
+  print(grep("Y-RNA",genes[unig,]$V2))
 
   write.table(genes[unig,], file = "genes.tsv", row.names=FALSE,col.names = FALSE, sep="\t",quote = F)
   write.table(barcodes[unib,], file = "barcodes.tsv", row.names=FALSE,col.names = FALSE, sep="\t",quote=F)
