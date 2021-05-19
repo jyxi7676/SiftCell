@@ -72,8 +72,8 @@ SiftCellShuffle = function(workingdir)
 
   print(head(unig))
   
-  print(grep("Y-RNA",genes$V2))
-  print(grep("Y-RNA",genes[unig,]$V2))
+  print(grep("Y-RNA",genes$V2,value=T))
+  print(grep("Y-RNA",genes[unig,]$V2,value=T))
 
   write.table(genes[unig,], file = "genes.tsv", row.names=FALSE,col.names = FALSE, sep="\t",quote = F)
   write.table(barcodes[unib,], file = "barcodes.tsv", row.names=FALSE,col.names = FALSE, sep="\t",quote=F)
