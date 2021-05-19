@@ -21,6 +21,8 @@ SiftCellShuffle = function(workingdir)
   
   #replace dot with underscore in gene names
   genes$V2 = gsub(".", "-", genes$V2, fixed = TRUE)
+  write.table(genes, file = "DGE/genes.tsv", row.names=FALSE,col.names = FALSE, sep="\t",quote = F)
+
 
 
   m=readLines(matrixDir)
