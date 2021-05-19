@@ -18,6 +18,9 @@ SiftCellShuffle = function(workingdir)
   geneDir = paste0(workingdir,"DGE/genes.tsv")
   barcodes = read.table(barcodeDir,sep = '\t', header = F)
   genes = read.table(geneDir,sep = '\t', header = F)
+  
+  #replace dot with underscore in gene names
+  genes$V2 = gsub(".", "-", genes$V2, fixed = TRUE)
 
 
   m=readLines(matrixDir)
