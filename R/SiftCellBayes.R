@@ -76,7 +76,7 @@ solveDMM = function(p0,umi,geneProfile,lb_p,ub_p)
 #' @param ub_p a scalar of upper bound of p
 #' @param lb_p a scalar of lower bound of p
 #' @return matrix of estimated proportion of DMM
-getP = function(geneProfile,mtx,threshold=100,seed = 0, ub_p=1, lb_p=0)
+getP = function(geneProfile,mtx,threshold,seed = 0, ub_p=1, lb_p=0)
 {
  #gp.t = t(as.matrix(geneProfile))
  m = as.matrix(mtx[,colSums(mtx)>threshold])
