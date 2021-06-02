@@ -5,7 +5,7 @@
 #' @param alpha scale between 0 and 1 used to adjust 0 value in gene profile for droplets with celltype infomation
 #' @return a matrix with gene profile for all the celltypes and soup
 #' @export
-getGeneProfile = function(mtx, celltype,alpha=0.01)
+getGeneProfile = function(mtx, celltype,alpha=0.01,threshold)
 {
  colnames(celltype) = c("BARCODE","TYPE")
  if(any(is.na(match(celltype$BARCODE,colnames(mtx)))))
@@ -14,7 +14,8 @@ getGeneProfile = function(mtx, celltype,alpha=0.01)
  }
  cell.type = unique(celltype$TYPE)
  cell.type = c(cell.type[order(cell.type)],"AMB")
- p.AMB =rowSums(mtx) / sum(mtx)
+ mtx_=mtx[,colSums(mtx)<threshold]
+ p.AMB =rowSums(mtx_) / sum(mtx_)
  d = length(cell.type)
  p = sapply((1:(d-1)),function(x) {m = mtx[,match(celltype[celltype$TYPE==cell.type[x],]$BARCODE,colnames(mtx))];return((1-alpha)*rowSums(m)/sum(m)+alpha*p.AMB) })
  p = cbind(p,p.AMB)
@@ -120,7 +121,7 @@ SiftCellBayes = function(workingdir,celltype,alpha=0.01,threshold=100,ub_p=1, lb
   orgDGE = readDGE(paste0(workingdir,"/DGE/"))
   orgDGE = orgDGE [rowSums(orgDGE) > 0,]
   orgDGE = orgDGE[,colSums(orgDGE)>0]
-  geneProfile = t(as.matrix(getGeneProfile(orgDGE, celltype,alpha)))
+  geneProfile = t(as.matrix(getGeneProfile(orgDGE, celltype,alpha,threshold)))
   prop = getP(geneProfile,orgDGE,threshold,seed = 0, ub_p, lb_p)
   return(t(prop))
 }
