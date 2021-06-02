@@ -121,6 +121,6 @@ SiftCellBayes = function(workingdir,celltype,alpha=0.01,threshold=100,ub_p=1, lb
   orgDGE = orgDGE [rowSums(orgDGE) > 0,]
   orgDGE = orgDGE[,colSums(orgDGE)>0]
   geneProfile = t(as.matrix(getGeneProfile(orgDGE, celltype,alpha)))
-  prop = getP(geneProfile,orgDGE,threshold=100,seed = 0, ub_p, lb_p)
+  prop = getP(geneProfile,orgDGE,threshold,seed = 0, ub_p, lb_p)
   return(t(prop))
 }
