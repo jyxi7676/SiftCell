@@ -14,8 +14,12 @@ getGeneProfile = function(mtx, celltype,alpha=0.01,threshold)
  }
  cell.type = unique(celltype$TYPE)
  cell.type = c(cell.type[order(cell.type)],"AMB")
- mtx_=mtx[,colSums(mtx)<threshold]
- p.AMB =rowSums(mtx_) / sum(mtx_)
+ everything=mtx[,colSums(mtx)>0]
+ n1 = dim(everything)[1]
+ n2 = dim(everything)[2]
+ #p.AMB =rowSums(mtx_) / sum(mtx_)
+ p.AMB = getAmbientProp(everything,n1,n2) #needs to speed up
+ p.AMB = p.AMB/sum(p.AMB)
  d = length(cell.type)
  p = sapply((1:(d-1)),function(x) {m = mtx[,match(celltype[celltype$TYPE==cell.type[x],]$BARCODE,colnames(mtx))];return((1-alpha)*rowSums(m)/sum(m)+alpha*p.AMB) })
  p = cbind(p,p.AMB)
