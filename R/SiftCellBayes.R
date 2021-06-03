@@ -3,6 +3,7 @@
 #' @param mtx DGE matrix
 #' @param celltype dataframe with celltype information, 1st coloum is barcode, 2nd column is celltype
 #' @param alpha scale between 0 and 1 used to adjust 0 value in gene profile for droplets with celltype infomation
+#' @param threshold umi cut off
 #' @return a matrix with gene profile for all the celltypes and soup
 #' @export
 getGeneProfile = function(mtx, celltype,alpha=0.01,threshold)

@@ -12,7 +12,15 @@
 #' @return a list
 #' @export
 dgeShuffle <- function(n_genes, n_bcds, num_nonzeros, numis, geneInd, barcodeInd, totalumi) {
-    .Call(`_SiftCell_dgeShuffle`, n_genes, n_bcds, num_nonzeros, numis, geneInd, barcodeInd, totalumi)
+    .Call('_SiftCell_dgeShuffle', PACKAGE = 'SiftCell', n_genes, n_bcds, num_nonzeros, numis, geneInd, barcodeInd, totalumi)
+}
+
+#' Rcpp function to get the gene profile of ambient droplets
+#' @param m a sparse matrix of ambient drpolets
+#' @param nrow the rows of m
+#' @param ncol the cols of m
+getAmbientProp <- function(m, nrow, ncol) {
+    .Call('_SiftCell_getAmbientProp', PACKAGE = 'SiftCell', m, nrow, ncol)
 }
 
 #' Rcpp function to get the coefficieint of DMM
@@ -22,6 +30,6 @@ dgeShuffle <- function(n_genes, n_bcds, num_nonzeros, numis, geneInd, barcodeInd
 #' @param lb_p a vector of lower bound for p
 #' @return a matrix with convergence and coefficients
 runDMM <- function(geneProfile, mtx, ub_p, lb_p) {
-    .Call(`_SiftCell_runDMM`, geneProfile, mtx, ub_p, lb_p)
+    .Call('_SiftCell_runDMM', PACKAGE = 'SiftCell', geneProfile, mtx, ub_p, lb_p)
 }
 
