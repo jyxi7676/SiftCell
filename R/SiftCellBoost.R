@@ -226,14 +226,29 @@ labelData = function(rawDGE,shfDGE,rawPC,shfPC,HVG,flagCells,outlier,dataName,ex
   {
     stop("rawDGE dimension does not match with shfDGE or rawPC dimension does not match with shfPC")
   }
+  rawPC=as.data.frame(rawPC)
+  shfPC=as.data.frame(shfPC)
+
 
   ind1 = match(paste0(dataName,"Org_",outlier), rownames(rawPC))
   ind2 = match(paste0(dataName,"Org_",flagCells),rownames(rawPC))
-  data = rbind(rawPC[ind1,],rawPC[ind2,],shfPC)
+  ind1=ind1[complete.cases(ind1)]
+  ind2=ind2[complete.cases(ind2)]
+  if(is.null(ind2))
+  {
+    data= rbind(rawPC[ind1,],shfPC)
+    predData = rawPC[-c(ind1),]
+
+  }
+  else
+  {
+   data = rbind(rawPC[ind1,],rawPC[ind2,],shfPC)
+   predData = rawPC[-c(ind1,ind2),]
+
+  }
   label = c(rep("Soup",dim(data)[1]))
   label[1:length(ind1)] = "Nonsoup"
   labeledData = list("data" = data,"label" = label)
-  predData = rawPC[-c(ind1,ind2),]
 
   # labelData$label = "Soup"
   # labelData[1:length(ind1),"label"] = "Nonsoup"
@@ -357,7 +372,7 @@ runXGBoostPy = function(train_path,test_path,workingdir,dataName)
 #' @import reticulate
 #' @importFrom utils write.csv
 #' @export
-SiftCellBoost = function(workingdir,threshold=100,expectedN=1000,dataName="Sample",mitoGenes = TRUE, otherFlagGenes=NULL,N.PCs = 100,geneUMIthreshold=50,seed=0,quantileReg=FALSE)
+SiftCellBoost = function(workingdir,threshold=100,expectedN=1000,dataName="Sample",mitoGenes = TRUE, otherFlagGenes=NULL,N.PCs = 100,geneUMIthreshold=50,seed=0,quantileReg=FALSE,labels=FALSE)
 {
   if(is.null(seed))
   {
@@ -371,12 +386,48 @@ SiftCellBoost = function(workingdir,threshold=100,expectedN=1000,dataName="Sampl
   shfDGE = files$shuffleDGE
   rawCounts = files$rawCounts
   N = dim(rawDGE)[2]
+  neg=NULL
+  pos=NULL
+  if (labels!=FALSE)
+  {
+    labels=read.table(labels)
+    colnames(labels)=c('BARCODE','LABEL')
+
+    pos=labels$BARCODE[labels$LABEL=='Nonsoup']
+    neg=labels$BARCODE[labels$LABEL=='Soup']
+    if(length(pos)==0)
+    {
+      pos=NULL
+    }
+
+    if(length(neg)==0)
+    {
+      neg=NULL
+    }
+
+    }
+
+
+
   #detect flag cells
   flagCells = detectFlagCells(rawDGE,mitoGenes,otherFlagGenes)
+  if (!is.null(neg))
+  {
+    flagCells=c(flagCells,neg)
+    flagCells=unique(flagCells)
+  }
+
+
 
   print("Detect positive labeles")
   #detect droplets with pseudo positive labeles
   outlier = detectOutlier(rawDGE,rawCounts,expectedN)
+  if (!is.null(pos))
+  {
+    outlier=c(outlier,pos)
+    outlier=unique(outlier)
+  }
+
   print("Detect Highly Variable Genes")
   HVG = detectHVG(rawDGE,geneUMIthreshold,quantileReg)
 
@@ -393,8 +444,59 @@ SiftCellBoost = function(workingdir,threshold=100,expectedN=1000,dataName="Sampl
   predData = dataset$PredData
   lb_path = paste0(workingdir,"/labeledData.csv")
   pd_path = paste0(workingdir,"/predData.csv")
-  write.csv(labeledData,lb_path)
+  # if(labels!=FALSE)
+  #
+  # {
+  #   labeledData=data.frame(labeledData)
+  #   orig=sapply(1:dim(labeledData)[1],function(i) {strsplit(rownames(labeledData)[i],'_')[[1]][1]})
+  #   labeledData$orig=orig
+  #   org_data=labeledData[labeledData$orig==paste0(dataName,'Org'),]
+  #  # org_pos=org_data[org_data$label=='Nonsoup',]
+  # #  org_neg=org_data[org_data$label=='Soup',]
+  #   shf_data=labeledData[labeledData$orig==paste0(dataName,'Shf'),]
+  #
+  #   labels=read.csv(labels,row.names=1)
+  #   pos=labeles$POS
+  #   neg=labeles$NEG
+  #   if(!is.null(pos))
+  #   {
+  #     ind_pos=match(rownames(org_data),paste0(paste0(dataName,'Org'),pos))
+  #     ind_pos=ind_pos[complete.cases(ind_pos)]
+  #
+  #     if(!is.null(ind_pos))
+  #     {
+  #       org_data[ind_pos,'label']='Nonsoup'
+  #       org_data=subset(org_data, select = -c(orig) )
+  #     }
+  #
+  #   }
+  #   if(!is.null(neg))
+  #   {
+  #     ind_neg=match(rownames(org_data),paste0(paste0(dataName,'Org'),neg))
+  #     ind_neg=ind_neg[complete.cases(ind_neg)]
+  #     if(!is.null(ind_neg))
+  #     {
+  #       org_data2=org_data[ind_neg,]
+  #       org_data2$label='Soup'
+  #       org_data2=subset(org_data2,select=-c(orig))
+  #       org_data=rbind(org_data,org_data2)
+  #
+  #     }
+  #
+  #
+  #   }
+  #
+  #
+  #   shf_data=subset(shf_data,select=c(orig))
+  #   labeledData=rbind(org_data,shf_data)
+  #
+  #
+  #
+  # }
+
+
   write.csv(predData,pd_path)
+  write.csv(labeledData,lb_path)
   runXGBoostPy(lb_path,pd_path,workingdir,dataName)
 
   print("Done!")

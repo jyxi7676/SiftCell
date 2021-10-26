@@ -4,7 +4,7 @@
 \alias{getP}
 \title{This function get the proportion coefficient for Multinomial Mixture Model}
 \usage{
-getP(geneProfile, mtx, threshold = 100, seed = 0, ub_p = 1, lb_p = 0)
+getP(geneProfile, mtx, threshold, seed = 0, ub_p = 1, lb_p = 0)
 }
 \arguments{
 \item{geneProfile}{matrix of gene profile for all cell types and soup}

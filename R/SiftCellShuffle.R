@@ -11,6 +11,7 @@ SiftCellShuffle = function(workingdir)
 {
   #workingdir = "C:/Users/jyxi/Documents/rescue/112385/"
   #sanity checking
+  print('Start SiftCell-Shuffle')
   matrixDir = paste0(workingdir,"DGE/matrix.mtx")
   barcodeDir = paste0(workingdir,"DGE/barcodes.tsv")
   geneDir = paste0(workingdir,"DGE/genes.tsv")
@@ -50,9 +51,9 @@ SiftCellShuffle = function(workingdir)
   uniq_geneInd = unique(geneInd)
   uniq_barcInd = unique(barcodeInd)
 
-  tic()
+  #tic()
   shuffle=dgeShuffle(length(uniq_geneInd),length(uniq_barcInd),sum(numis!=0),numis,geneInd,barcodeInd,totalumi)
-  toc()  
+  #toc()
   shuffleDGE = sparseMatrix(
     i = shuffle$igenes,
     j = shuffle$ibcds,
@@ -71,7 +72,7 @@ SiftCellShuffle = function(workingdir)
 
 
 #   print(head(unig))
-  
+
 #   print(grep("Y-RNA",genes$V2,value=T))
 #   print(grep("Y-RNA",genes[unig,]$V2,value=T))
 
@@ -80,6 +81,8 @@ SiftCellShuffle = function(workingdir)
   setwd(workingdir)
 
   write.table(genes, file = geneDir, row.names=FALSE,col.names = FALSE, sep="\t",quote = F)
+  print('Done')
+
 
 }
 

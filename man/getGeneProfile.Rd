@@ -4,7 +4,7 @@
 \alias{getGeneProfile}
 \title{This function get the gene profile}
 \usage{
-getGeneProfile(mtx, celltype, alpha = 0.01)
+getGeneProfile(mtx, celltype, alpha = 0.01, threshold)
 }
 \arguments{
 \item{mtx}{DGE matrix}
@@ -12,6 +12,8 @@ getGeneProfile(mtx, celltype, alpha = 0.01)
 \item{celltype}{dataframe with celltype information, 1st coloum is barcode, 2nd column is celltype}
 
 \item{alpha}{scale between 0 and 1 used to adjust 0 value in gene profile for droplets with celltype infomation}
+
+\item{threshold}{umi cut off}
 }
 \value{
 a matrix with gene profile for all the celltypes and soup

@@ -1,4 +1,3 @@
-
 #define ARMA_64BIT_WORD
 #include <RcppArmadillo.h>
 #include <math.h>
@@ -8,19 +7,20 @@ using namespace Rcpp;
 using namespace arma;
 typedef std::vector<double> stdvec;
 
-//' Rcpp function to get the gene profile of ambient droplets 
+//' Rcpp function to get the gene profile of ambient droplets
 //' @param m a sparse matrix of ambient drpolets
 //' @param nrow the rows of m
 //' @param ncol the cols of m
+//' @export
 // [[Rcpp::export]]
 NumericVector getAmbientProp(arma::sp_mat m,int nrow,int ncol) {
- 
+
   mat ones(1, nrow, fill::ones);
-  
+
   mat  bcsum = ones*m;
   mat  ref(1,ncol);
-  
-  ref.fill(100.0);
+
+  ref.fill(200.0);
   mat maxUMI = min(bcsum,ref);
   arma::mat adds(1,ncol);
   adds.fill(1.0);
@@ -38,7 +38,7 @@ NumericVector getAmbientProp(arma::sp_mat m,int nrow,int ncol) {
   gene = calsum/ncol;
   vec out=gene.col(0);
   return (Rcpp::NumericVector(out.begin(),out.end()));
-  
+
 }
 
 

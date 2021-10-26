@@ -14,7 +14,8 @@ SiftCellBoost(
   N.PCs = 100,
   geneUMIthreshold = 50,
   seed = 0,
-  quantileReg = FALSE
+  quantileReg = FALSE,
+  labels = FALSE
 )
 }
 \arguments{

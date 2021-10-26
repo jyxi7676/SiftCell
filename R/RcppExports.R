@@ -19,6 +19,7 @@ dgeShuffle <- function(n_genes, n_bcds, num_nonzeros, numis, geneInd, barcodeInd
 #' @param m a sparse matrix of ambient drpolets
 #' @param nrow the rows of m
 #' @param ncol the cols of m
+#' @export
 getAmbientProp <- function(m, nrow, ncol) {
     .Call('_SiftCell_getAmbientProp', PACKAGE = 'SiftCell', m, nrow, ncol)
 }

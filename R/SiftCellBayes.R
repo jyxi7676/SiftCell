@@ -22,7 +22,11 @@ getGeneProfile = function(mtx, celltype,alpha=0.01,threshold)
  p.AMB = getAmbientProp(everything,n1,n2) #needs to speed up
  p.AMB = p.AMB/sum(p.AMB)
  d = length(cell.type)
+ #p = sapply((1:(d-1)),function(x) {m = mtx[,match(celltype[celltype$TYPE==cell.type[x],]$BARCODE,colnames(mtx))];return(rowSums(m)/sum(m)) })
+ #p*(1-0.01)+(0.01)*p.AMB
  p = sapply((1:(d-1)),function(x) {m = mtx[,match(celltype[celltype$TYPE==cell.type[x],]$BARCODE,colnames(mtx))];return((1-alpha)*rowSums(m)/sum(m)+alpha*p.AMB) })
+ #p = sapply((1:(d-1)),function(x) {m = mtx[,match(celltype[celltype$TYPE==cell.type[x],]$BARCODE,colnames(mtx))];return((1-alpha)* rowMeans(log((m)/(rowSums(m))))+alpha*p.AMB) })
+ #p=p/colSums(p)
  p = cbind(p,p.AMB)
  colnames(p) = paste0("p.",cell.type)
  return(p)
@@ -82,6 +86,7 @@ solveDMM = function(p0,umi,geneProfile,lb_p,ub_p)
 #' @param ub_p a scalar of upper bound of p
 #' @param lb_p a scalar of lower bound of p
 #' @return matrix of estimated proportion of DMM
+#' @export
 getP = function(geneProfile,mtx,threshold,seed = 0, ub_p=1, lb_p=0)
 {
  #gp.t = t(as.matrix(geneProfile))
