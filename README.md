@@ -5,7 +5,7 @@ SiftCell is a robust framework to identify and filter cell-missing droplets from
 
 ## Getting Started
 STtools is a R package, and it is recommended to run in R with version >=4.1.1.See Installtion for required software tools to run STTools. 
-An [tutorial](https://colab.research.google.com/drive/1ebV42lohhkTWGjkHHjUs1Ma92IXAxx2t)is shown on brain nuclei data.
+A [tutorial](https://colab.research.google.com/drive/1ebV42lohhkTWGjkHHjUs1Ma92IXAxx2t) is shown on brain nuclei data.
 Explanation of separate main functions are shown as following: 
 - **SiftCell-Shuffle**
 	- It works with arbitrary digital expression matrix to visualize the distribution of potentially cell-missing barcoded droplets in a manifold space using randomization. 
@@ -14,18 +14,18 @@ Explanation of separate main functions are shown as following:
 	SiftCellShuffle(workingdir)
 	```
 - **SiftCell-Boost**
-	- It leverages results from *SiftCell-Shuffle* and applies a gradient boosting classification algorithm [XGBoost]() by assigning randomized droplets as negative labels (representing ambient RNAs) and droplets confidently predicted to contain cells as positive labels using an overdispersion test.
+	- It leverages results from *SiftCell-Shuffle* and applies a gradient boosting classification algorithm [XGBoost](https://www.kdd.org/kdd2016/papers/files/rfp0697-chenAemb.pdf) by assigning randomized droplets as negative labels (representing ambient RNAs) and droplets confidently predicted to contain cells as positive labels using an overdispersion test.
 	- It takes working directory as input, and output a txt file with cell-containing droplets.
 	- It allows the user to set flag genes to to avoid including unintended cell types (i.e. platelets), see pacakge documentation for details.
-	- It also allows a manually curated version of training labels by leveraging visualizations from SiftCell-Shuffle. See [format]() of manual version of training labels.
+	- It also allows a manually curated version of training labels by leveraging visualizations from SiftCell-Shuffle. See format of [manual version of training labels](./doc/labels_format.md)  manual version of training labels.
 	```ruby
 	SiftCellBoost(workingdir)
 	```
 - **SiftCell-Bayes**
 	- It is a model based method that estimate the contribution of ambient RNAs per droplet
-	- It takes input of external cell type information either from *SiftCell-Boost* (needs to modify func to take SiftCellBoost result) or from external sources. Please refer to the [format of cell type]() files.
-	- The format of the cell type file should have two columns, the first column is barcodes, the 2nd column contains the cell type info.Estimated proportion coeffcient of the Dirichlet Multinomial Mixture model is returned. The example cell type file can be found in xxx. 
-	- It outputs the estimated proportion coefficient of each cell type (first n columns for n cell types)and the ambient cell types(last column).
+	- It takes input of external cell type information either from *SiftCell-Boost* (needs to modify func to take SiftCellBoost result) or from external sources. Please refer to the format of [cell type](./doc/celltype_format.md) files.
+	- The format of the cell type file should have two columns, the first column is barcodes, the 2nd column contains the cell type info.Estimated proportion coeffcient of the Dirichlet Multinomial Mixture model is returned. 
+	- It outputs the estimated proportion coefficient of each cell type (first k columns for k various cell types)and the ambient cell types(last column).
 	```ruby
 	celltype = read.csv("/path_to_celltype.csv",row.names=1)
 	prop = SiftCellBayes(workingdir,celltype)
