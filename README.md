@@ -1,51 +1,50 @@
 # SiftCell
-**Version 1.0.0**
-A robust framework to filter cell-free droplets in scRNA-seq data. For details, please refer to the paper:xxx
+SiftCell is a robust framework to identify and filter cell-missing droplets from scRNA-seq data. The SiftCell R package includes three tools: *SiftCell-Shuffle* to visualize cell-containing and cell-missing droplets in manifold space with randomization, *SiftCell-Boost* to classify between two types of droplets, and *SiftCell-Mix* to quantify the contribution of ambient RNAs for each droplet.  For details, please refer to [SiftCell paper](http://xxx)
 
 ---
 
 ## Getting Started
-Please follow the following steps
-- **Prerequisites**
-	- Latest version of R is required; Is' better to install the latest version of python, but not required.
-- **Installation**
-  	- Install the released version of SiftCell from github
-  	- 
-
-	```ruby
-	install.packages("devtools")
- 	library(devtools)
- 	install_github("jyxi7676/SiftCell")
-	library(SiftCell)
-	 ```
-
-
-
----
-
-## Usage
-An example is given to show how to run SiftCell framework
+STtools is a R package, and it is recommended to run in R with version >=4.1.1.See Installtion for required software tools to run STTools. 
+An [tutorial](https://colab.research.google.com/drive/1ebV42lohhkTWGjkHHjUs1Ma92IXAxx2t)is shown on brain nuclei data.
+Explanation of separate main functions are shown as following: 
 - **SiftCell-Shuffle**
- 	- example files can be found in , please download this data and put the file in the working directory with folder name "DGE"
-	- The function *SiftCellShuffle* takes working directory "workingdir" as input parameters and write shuffleDGE in the working directory. And write barcodes for cell-containing droplets in the working directory
+	- It works with arbitrary digital expression matrix to visualize the distribution of potentially cell-missing barcoded droplets in a manifold space using randomization. 
+ 	- It takes working directory "workingdir" as input parameters and write shuffleDGE with barcodes.tsv, features.tsv, and matrix.mtx in the working directory. 
 	```ruby
 	SiftCellShuffle(workingdir)
 	```
 - **SiftCell-Boost**
-	- After running *SifCell-Shuffle*, two folders(DGE and shuffleDGE) will exist in the working directory
-	- As for the example we take default parameters. Please refer to the documentation for details about meaning of the paramters.
+	- It leverages results from *SiftCell-Shuffle* and applies a gradient boosting classification algorithm [XGBoost]() by assigning randomized droplets as negative labels (representing ambient RNAs) and droplets confidently predicted to contain cells as positive labels using an overdispersion test.
+	- It takes working directory as input, and output a txt file with cell-containing droplets.
+	- It allows the user to set flag genes to to avoid including unintended cell types (i.e. platelets), see pacakge documentation for details.
+	- It also allows a manually curated version of training labels by leveraging visualizations from SiftCell-Shuffle. See [format]() of manual version of training labels.
 	```ruby
 	SiftCellBoost(workingdir)
 	```
 - **SiftCell-Bayes**
-	- The function *SiftCellBayes* needs input of external cell type information; The format of the cell type file should have two columns, the first column is barcodes, the 2nd column contains the cell type info.Estimated proportion coeffcient of the Dirichlet Multinomial Mixture model is returned. The example cell type file can be found in xxx. 
+	- It is a model based method that estimate the contribution of ambient RNAs per droplet
+	- It takes input of external cell type information either from *SiftCell-Boost* (needs to modify func to take SiftCellBoost result) or from external sources. Please refer to the [format of cell type]() files.
+	- The format of the cell type file should have two columns, the first column is barcodes, the 2nd column contains the cell type info.Estimated proportion coeffcient of the Dirichlet Multinomial Mixture model is returned. The example cell type file can be found in xxx. 
+	- It outputs the estimated proportion coefficient of each cell type (first n columns for n cell types)and the ambient cell types(last column).
 	```ruby
 	celltype = read.csv("/path_to_celltype.csv",row.names=1)
 	prop = SiftCellBayes(workingdir,celltype)
 	```
+
+## Installation
+You also need to install the following software tools 
+- R version >= 4.1.1
+- Python version >= 2.7.0
+
+To install STtools:
+
+```ruby
+install.packages("devtools")
+library(devtools)
+install_github("jyxi7676/SiftCell")
+library(SiftCell)
+ ```
 ---
-
-
 
 ## Contact
 - Jingyue Xi <jyxi@umich.edu>
