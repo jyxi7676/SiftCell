@@ -137,5 +137,6 @@ SiftCellMix = function(workingdir,celltype,alpha=0.01,threshold=100,ub_p=1, lb_p
   print('debug here')
   geneProfile = t(as.matrix(getGeneProfile(orgDGE, celltype,alpha,threshold)))
   prop = getP(geneProfile,orgDGE,threshold,seed = 0, ub_p, lb_p)
-  write.csv(t(prop),'frac.csv')
+  write.csv(t(prop),paste0(workingdir,'/frac.csv'))
+
 }
