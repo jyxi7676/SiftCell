@@ -19,9 +19,7 @@ getGeneProfile = function(mtx, celltype,alpha=0.01,threshold)
  n1 = dim(everything)[1]
  n2 = dim(everything)[2]
  #p.AMB =rowSums(mtx_) / sum(mtx_)
- print('here 2 now')
  p.AMB = getAmbientProp(everything,n1,n2) #needs to speed up
- print('here 3 now')
 
  p.AMB = p.AMB/sum(p.AMB)
  d = length(cell.type)
@@ -134,7 +132,6 @@ SiftCellMix = function(workingdir,celltype,alpha=0.01,threshold=100,ub_p=1, lb_p
   orgDGE = readDGE(paste0(workingdir,"/DGE/"))
   orgDGE = orgDGE [rowSums(orgDGE) > 0,]
   orgDGE = orgDGE[,colSums(orgDGE)>0]
-  print('debug here')
   geneProfile = t(as.matrix(getGeneProfile(orgDGE, celltype,alpha,threshold)))
   prop = getP(geneProfile,orgDGE,threshold,seed = 0, ub_p, lb_p)
   write.csv(t(prop),paste0(workingdir,'/frac.csv'))
