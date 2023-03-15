@@ -497,7 +497,9 @@ SiftCellBoost = function(workingdir,threshold=100,expectedN=1000,dataName="Sampl
 
   write.csv(predData,pd_path)
   write.csv(labeledData,lb_path)
-  runXGBoostPy(lb_path,pd_path,workingdir,dataName)
+  t=runXGBoostPy(lb_path,pd_path,workingdir,dataName)
+  print(t)
+
 
   print("Done!")
 
