@@ -21,16 +21,22 @@ SiftCellShuffle = function(workingdir)
   #replace dot with underscore in gene names
   #genes$V2 = gsub(".", "-", genes$V2, fixed = TRUE)
 
+  spm=summary(readMM(matrixDir))
+  header=colsplit(readLines(matrixDir,3)[3],pattern=" ", names=c("Part1", "Part2","Part3"))
+  n_genes = header$Part1[1]
+  n_bcds = header$Part2[1]
+  num_nonzeros = header$Part3[1]
+  colnames(spm)=c("Part1","Part2","Part3")
 
 
-  m=readLines(matrixDir)
-  nline = length(m)
-  mline = m[3:nline]
+
+  #nline = length(m)
+  #mline = m[3:nline]
   #spm=colsplit(string=mline[1:100], pattern=" ", names=c("Part1", "Part2","Part3"))
-  spm=colsplit(string=mline, pattern=" ", names=c("Part1", "Part2","Part3"))
-  n_genes = spm$Part1[1]
-  n_bcds = spm$Part2[1]
-  num_nonzeros = spm$Part3[1]
+  #spm=colsplit(string=mline, pattern=" ", names=c("Part1", "Part2","Part3"))
+  #n_genes = spm$Part1[1]
+  #n_bcds = spm$Part2[1]
+  #num_nonzeros = spm$Part3[1]
 
   if(nrow(genes) != n_genes)
   {
@@ -42,18 +48,23 @@ SiftCellShuffle = function(workingdir)
     stop("barcode dimensiton does not match")
   }
 
-
-  #sum_umis = num_nonzeros
-  numis = spm$Part3[-1]
-  geneInd = spm$Part1[-1]
-  barcodeInd = spm$Part2[-1]
+  numis = spm$Part3
+  geneInd = spm$Part1
+  barcodeInd = spm$Part2
   totalumi = sum(numis)
   uniq_geneInd = unique(geneInd)
   uniq_barcInd = unique(barcodeInd)
+  #sum_umis = num_nonzeros
+  #numis = spm$Part3[-1]
+  #geneInd = spm$Part1[-1]
+  #barcodeInd = spm$Part2[-1]
+  #totalumi = sum(numis)
+  #uniq_geneInd = unique(geneInd)
+  #uniq_barcInd = unique(barcodeInd)
 
   #tic()
   shuffle=dgeShuffle(length(uniq_geneInd),length(uniq_barcInd),sum(numis!=0),numis,geneInd,barcodeInd,totalumi)
-  #toc()
+ # toc()
   shuffleDGE = sparseMatrix(
     i = shuffle$igenes,
     j = shuffle$ibcds,
