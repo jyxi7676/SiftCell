@@ -24,9 +24,7 @@ getAmbientProp <- function(m, nrow, ncol) {
     .Call(`_SiftCell_getAmbientProp`, m, nrow, ncol)
 }
 
-rcpp_hello_world <- function() {
-    .Call(`_SiftCell_rcpp_hello_world`)
-}
+
 
 #' Rcpp function to get the coefficieint of DMM
 #' @param geneProfile matrix of gene profile for all cell types and soup

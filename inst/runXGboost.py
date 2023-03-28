@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 import sklearn 
 import xgboost as xgb
-
 def runXGboost(labelData_path,predData_path,workingdir,dataName):
     os.chdir(workingdir)
     labelData = pd.read_csv(labelData_path,index_col=0)
@@ -28,10 +27,8 @@ def runXGboost(labelData_path,predData_path,workingdir,dataName):
     with open('CellContaining.txt', 'w') as f:
         for item in cellContaining:
             f.write("%s\n" % item)
-    print("Done!")
+    #print("Done!")
     #print (len(cellContaining)," Cell-containing droplets detected!")
 
 
 runXGboost(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4])
-
-
