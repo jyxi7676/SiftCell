@@ -41,36 +41,10 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rcpp_hello_world
-List rcpp_hello_world();
-RcppExport SEXP _SiftCell_rcpp_hello_world() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(rcpp_hello_world());
-    return rcpp_result_gen;
-END_RCPP
-}
-// runDMM
-NumericMatrix runDMM(NumericMatrix geneProfile, NumericMatrix mtx, NumericVector ub_p, NumericVector lb_p);
-RcppExport SEXP _SiftCell_runDMM(SEXP geneProfileSEXP, SEXP mtxSEXP, SEXP ub_pSEXP, SEXP lb_pSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type geneProfile(geneProfileSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type mtx(mtxSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type ub_p(ub_pSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type lb_p(lb_pSEXP);
-    rcpp_result_gen = Rcpp::wrap(runDMM(geneProfile, mtx, ub_p, lb_p));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_SiftCell_dgeShuffle", (DL_FUNC) &_SiftCell_dgeShuffle, 7},
     {"_SiftCell_getAmbientProp", (DL_FUNC) &_SiftCell_getAmbientProp, 3},
-    {"_SiftCell_rcpp_hello_world", (DL_FUNC) &_SiftCell_rcpp_hello_world, 0},
-    {"_SiftCell_runDMM", (DL_FUNC) &_SiftCell_runDMM, 4},
     {NULL, NULL, 0}
 };
 

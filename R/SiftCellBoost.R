@@ -369,6 +369,7 @@ runXGBoostPy = function(train_path,test_path,workingdir,dataName)
 #' @param geneUMIthreshold genes less than the threshold is discarded
 #' @param seed seed for randomization
 #' @param quantileReg default if use top 1000 HVG
+#' @param labels external labels
 #' @import reticulate
 #' @importFrom utils write.csv
 #' @export
@@ -385,6 +386,7 @@ SiftCellBoost = function(workingdir,threshold=100,expectedN=1000,dataName="Sampl
   rawDGE = files$originalDGE
   shfDGE = files$shuffleDGE
   rawCounts = files$rawCounts
+  remove(files)
   N = dim(rawDGE)[2]
   neg=NULL
   pos=NULL
@@ -427,6 +429,7 @@ SiftCellBoost = function(workingdir,threshold=100,expectedN=1000,dataName="Sampl
     outlier=c(outlier,pos)
     outlier=unique(outlier)
   }
+  remove(rawCounts)
 
   print("Detect Highly Variable Genes")
   HVG = detectHVG(rawDGE,geneUMIthreshold,quantileReg)
@@ -436,63 +439,24 @@ SiftCellBoost = function(workingdir,threshold=100,expectedN=1000,dataName="Sampl
   pca = suppressWarnings(runPCA(rawDGE,shfDGE,HVG,log=TRUE,dataName, retx = TRUE, center = TRUE, scale = TRUE,N.PCs))
   rawPC = pca$x[1:N,]
   shfPC = pca$x[(N+1):(2*N),]
+  remove(pca)
 
   print("Run XGBoost")
   #generate pseudo-labeles
   dataset = labelData(rawDGE,shfDGE,rawPC,shfPC,HVG,flagCells,outlier,dataName,expectedN)
+  remove(rawDGE)
+  remove(shfDGE)
+  remove(rawPC)
+  remove(shfPC)
+  remove(HVG)
+  remove(flagCells)
+  remove(outlier)
+
   labeledData = dataset$LabelData
   predData = dataset$PredData
   lb_path = paste0(workingdir,"/labeledData.csv")
   pd_path = paste0(workingdir,"/predData.csv")
-  # if(labels!=FALSE)
-  #
-  # {
-  #   labeledData=data.frame(labeledData)
-  #   orig=sapply(1:dim(labeledData)[1],function(i) {strsplit(rownames(labeledData)[i],'_')[[1]][1]})
-  #   labeledData$orig=orig
-  #   org_data=labeledData[labeledData$orig==paste0(dataName,'Org'),]
-  #  # org_pos=org_data[org_data$label=='Nonsoup',]
-  # #  org_neg=org_data[org_data$label=='Soup',]
-  #   shf_data=labeledData[labeledData$orig==paste0(dataName,'Shf'),]
-  #
-  #   labels=read.csv(labels,row.names=1)
-  #   pos=labeles$POS
-  #   neg=labeles$NEG
-  #   if(!is.null(pos))
-  #   {
-  #     ind_pos=match(rownames(org_data),paste0(paste0(dataName,'Org'),pos))
-  #     ind_pos=ind_pos[complete.cases(ind_pos)]
-  #
-  #     if(!is.null(ind_pos))
-  #     {
-  #       org_data[ind_pos,'label']='Nonsoup'
-  #       org_data=subset(org_data, select = -c(orig) )
-  #     }
-  #
-  #   }
-  #   if(!is.null(neg))
-  #   {
-  #     ind_neg=match(rownames(org_data),paste0(paste0(dataName,'Org'),neg))
-  #     ind_neg=ind_neg[complete.cases(ind_neg)]
-  #     if(!is.null(ind_neg))
-  #     {
-  #       org_data2=org_data[ind_neg,]
-  #       org_data2$label='Soup'
-  #       org_data2=subset(org_data2,select=-c(orig))
-  #       org_data=rbind(org_data,org_data2)
-  #
-  #     }
-  #
-  #
-  #   }
-  #
-  #
-  #   shf_data=subset(shf_data,select=c(orig))
-  #   labeledData=rbind(org_data,shf_data)
-  #
-  #
-  #
-  # }
+
 
 
   write.csv(predData,pd_path)
