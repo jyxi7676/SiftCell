@@ -38,6 +38,8 @@ SiftCellBoost(
 \item{seed}{seed for randomization}
 
 \item{quantileReg}{default if use top 1000 HVG}
+
+\item{labels}{external labels}
 }
 \description{
 This function runs SiftCell-Boost, it generates a file of barcode of infered cell-containing droplets

@@ -24,17 +24,3 @@ getAmbientProp <- function(m, nrow, ncol) {
     .Call(`_SiftCell_getAmbientProp`, m, nrow, ncol)
 }
 
-rcpp_hello_world <- function() {
-    .Call(`_SiftCell_rcpp_hello_world`)
-}
-
-#' Rcpp function to get the coefficieint of DMM
-#' @param geneProfile matrix of gene profile for all cell types and soup
-#' @param mtx a DGE matrix
-#' @param ub_p a vector of upper bound for p
-#' @param lb_p a vector of lower bound for p
-#' @return a matrix with convergence and coefficients
-runDMM <- function(geneProfile, mtx, ub_p, lb_p) {
-    .Call(`_SiftCell_runDMM`, geneProfile, mtx, ub_p, lb_p)
-}
-

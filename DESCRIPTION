@@ -1,13 +1,13 @@
 Package: SiftCell
-Type: Package
-Title: SiftCell framwork visualize, classify  and estimate contamination in scRNA-seq
+Title: SiftCell framework to identify cell containing and cell free droplets
 Version: 1.0
-Date: 2021-11-09
+Date: 2023-06-01
 Author: Jingyue Xi
 Maintainer: Jingyue Xi <jyxi@umich.edu>
-Description: One paragraph description of what the package does as one or more full sentences.
+Description: SiftCell identify and visualize cell-containing and cell-free droplets in manifold space via randomization, to classify between the two types of droplets, and to quantify the contribution of ambient RNAs for each droplet.
 License: GPL (>= 2)
-Imports: Rcpp (>= 1.0.7),reshape2,Matrix,tictoc,quantreg,squat,reticulate,Rsolnp,RcppArmadillo
+Encoding: UTF-8
+Imports: Rcpp (>= 1.0.7),reshape2,Matrix,foreach,doParallel,tictoc,corrcoverage,quantreg,squat,reticulate,parallel,Rsolnp,RcppArmadillo
 LinkingTo: Rcpp,RcppArmadillo
-RoxygenNote: 7.1.1
-Remotes:hyunminkang/squat
+RoxygenNote: 7.2.3
+Remotes: hyunminkang/squat
