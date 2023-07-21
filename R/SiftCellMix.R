@@ -8,22 +8,53 @@
 #' @export
 getGeneProfile = function(mtx,mtx_threshold,celltype,alpha=0.01,threshold)
 {
+  cell.type = unique(celltype$TYPE)
+  cell.type = c(cell.type[order(cell.type)],"AMB")
+  n1 = dim(mtx)[1]
+  n2 = dim(mtx)[2]
+  bcsum=colSums(mtx)
+  #weight=pmin(100,bcsum)+1
+  #logweight=log(weight)
+  #denom=sum(log(weight))
+  #comp1=sweep(mtx,2,bcsum,'/')
+  #comp2=sweep(comp1,1,logweight,'*')
+  #sweep(matrix(1:9,3,3), 2, c(1,2,3), "/")
+  #nom = rowSums(mtx / matrix(bcsum*logweight,nrow=n1,ncol=n2,byrow = T))
+  #nom = rowSums(mtx / (bcsum*logweight))
+  #amb=nom/denom
+  #amb=getAmbientProp(mtx,n1,n2)
+  #p.AMB=amb/sum(amb)
 
- cell.type = unique(celltype$TYPE)
- cell.type = c(cell.type[order(cell.type)],"AMB")
- n1 = dim(mtx)[1]
- n2 = dim(mtx)[2]
- p.AMB = getAmbientProp(mtx,n1,n2)
- p.AMB = p.AMB/sum(p.AMB)
- d = length(cell.type)
- p = sapply((1:(d-1)),function(x) {m = mtx_threshold[,match(celltype[celltype$TYPE==cell.type[x],]$BARCODE,colnames(mtx_threshold))];return((1-alpha)*rowSums(m)/sum(m)+alpha*p.AMB) })
+  p.AMB = getAmbientProp(mtx,n1,n2)
+  p.AMB = p.AMB/sum(p.AMB)
+  d = length(cell.type)
+  p = sapply((1:(d-1)),function(x) {m = mtx_threshold[,match(celltype[celltype$TYPE==cell.type[x],]$BARCODE,colnames(mtx_threshold))];return((1-alpha)*rowSums(m)/sum(m)+alpha*p.AMB) })
 
- remove(mtx)
- remove(mtx_threshold)
- p = cbind(p,p.AMB)
- colnames(p) = paste0("p.",cell.type)
- return(p)
+  remove(mtx)
+  remove(mtx_threshold)
+  p = cbind(p,p.AMB)
+  colnames(p) = paste0("p.",cell.type)
+  return(p)
 }
+
+# getGeneProfile = function(mtx,mtx_threshold,celltype,alpha=0.01,threshold)
+# {
+#  cell.type = unique(celltype$TYPE)
+#  cell.type = c(cell.type[order(cell.type)],"AMB")
+#  n1 = dim(mtx)[1]
+#  n2 = dim(mtx)[2]
+#  p.AMB = getAmbientProp(mtx,n1,n2)
+#  p.AMB = p.AMB/sum(p.AMB)
+#  d = length(cell.type)
+#  p = sapply((1:(d-1)),function(x) {m = mtx_threshold[,match(celltype[celltype$TYPE==cell.type[x],]$BARCODE,colnames(mtx_threshold))];return((1-alpha)*rowSums(m)/sum(m)+alpha*p.AMB) })
+#
+#  remove(mtx)
+#  remove(mtx_threshold)
+#  p = cbind(p,p.AMB)
+#  colnames(p) = paste0("p.",cell.type)
+#  return(p)
+# }
+
 
 
 
@@ -85,11 +116,14 @@ constraintFn =function(p)
 getP = function(geneProfile,m,seed = 0, ub_p=1, lb_p=0)
 {
 
- m = as.matrix(m)
+ #m = as.matrix(m)
  d = nrow(geneProfile)
  lb_p=rep(lb_p,d)
  ub_p=rep(ub_p,d)
+ umi=colSums(m)
  set.seed(seed)
+ #p0=rep(1/d,d)
+
 
  print('Start Parralel Computing')
  #parralel computing the fraction
@@ -100,17 +134,21 @@ getP = function(geneProfile,m,seed = 0, ub_p=1, lb_p=0)
 
 
 
- clusterExport(cl, c("solnp", "logsum","p0", "objectiveFn", "mtx_threshold", "geneProfile","constraintFn", "lb_p", "ub_p"))
+# clusterExport(cl, c("solnp", "logsum","objectiveFn", "geneProfile","constraintFn", "lb_p", "ub_p","d"),envir = .GlobalEnv)
+# clusterExport(cl, c("solnp", "logsum","objectiveFn","constraintFn"),envir = .GlobalEnv)
+ #clusterExport(cl, c("logsum","objectiveFn","constraintFn"),envir = .GlobalEnv)
+
  # Define the function to be applied in parallel
  parallel_function <- function(umi) {
-   out = solnp(p0, fun = function(x) {objectiveFn(x, umi, geneProfile)},
-                eqfun = constraintFn, eqB = 1,
-                LB = lb_p, UB = ub_p,
-                control = list(trace = 0))
+
+    out = solnp(rep(1/d,d), fun = function(x) {objectiveFn(x, umi, geneProfile)},
+                 eqfun = constraintFn, eqB = 1,
+                 LB = lb_p, UB = ub_p,
+                 control = list(trace = 0))
    return(cbind(t(out$pars),out$convergence))
  }
 
- result = parApply(cl, mtx_threshold, 2, parallel_function)
+ result = parApply(cl,m, 2, parallel_function)
 
  # Stop the parallel backend
  stopCluster(cl)
@@ -150,6 +188,7 @@ SiftCellMix = function(workingdir,celltype,alpha=0.01,threshold=100,ub_p=1, lb_p
   }
   colnames(celltype) = c("BARCODE","TYPE")
   print("Read and preprocess DGE")
+  #tic()
   orgDGE = readDGE(paste0(workingdir,"/DGE/"))
   if(any(is.na(match(celltype$BARCODE,colnames(orgDGE)))))
   {
@@ -158,11 +197,18 @@ SiftCellMix = function(workingdir,celltype,alpha=0.01,threshold=100,ub_p=1, lb_p
   orgDGE = orgDGE [,colSums(orgDGE)>0]
   orgDGE = orgDGE [rowSums(orgDGE)>0,]
   orgDGE_threshold=orgDGE[,colSums(orgDGE)>threshold]
+  #toc()
+
   print('Get gene profile')
+  #tic()
   geneProfile = t(as.matrix(getGeneProfile(orgDGE,orgDGE_threshold, celltype,alpha,threshold)))
-  print('Estimatae fraction')
-  prop = getP(geneProfile,orgDGE_threshold,seed = 0, ub_p, lb_p)
   remove(orgDGE)
+  #toc()
+
+  print('Estimatae fraction')
+  tic()
+  prop = getP(geneProfile,orgDGE_threshold, seed = 0, ub_p, lb_p)
+  toc()
   remove(orgDGE_threshold)
   write.csv(prop,paste0(workingdir,'/fraction.csv'))
 }

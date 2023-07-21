@@ -1,13 +1,13 @@
 Package: SiftCell
 Type: Package
-Title: SiftCell framwork visualize, classify  and estimate contamination in scRNA-seq
+Title: What the Package Does in One 'Title Case' Line
 Version: 1.0
 Date: 2021-11-09
-Author: Jingyue Xi
-Maintainer: Jingyue Xi <jyxi@umich.edu>
+Author: Your Name
+Maintainer: Your Name <your@email.com>
 Description: One paragraph description of what the package does as one or more full sentences.
 License: GPL (>= 2)
-Imports: Rcpp (>= 1.0.7),reshape2,Matrix,tictoc,quantreg,squat,reticulate,Rsolnp,RcppArmadillo
+Imports: Rcpp (>= 1.0.7),reshape2,Matrix,foreach,doParallel,tictoc,corrcoverage,quantreg,squat,reticulate,parallel,doParallel,Rsolnp,RcppArmadillo
 LinkingTo: Rcpp,RcppArmadillo
 RoxygenNote: 7.1.1
 Remotes:hyunminkang/squat
