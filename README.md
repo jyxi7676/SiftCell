@@ -52,5 +52,11 @@ library(SiftCell)
 
 ---
 
+## Citing SiftCell
+
+Xi J, Park SR, Lee JH, Kang HM. SiftCell: A robust framework to detect and isolate cell-containing droplets from single-cell RNA sequence reads. Cell Syst. 2023 Jul 19;14(7):620-628.e3. doi: 10.1016/j.cels.2023.06.002. PMID: 37473732.
+
+---
+
 ## License & copyright
 Jingyue Xi, Hyun Min Kang, University of Michigan
