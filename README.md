@@ -24,8 +24,8 @@ Explanation of separate main functions are shown as following:
 - **SiftCell-Mix**
 	- It is a model based method that estimate the contribution of ambient RNAs per droplet
 	- It takes input of external cell type information either from *SiftCell-Boost* (needs to modify func to take SiftCellBoost result) or from external sources. Please refer to the example format of [cell type](./examples/celltype.csv) files.
-	- The format of the cell type file should have two columns, the first column is barcodes, the 2nd column contains the cell type info.Estimated proportion coeffcient of the Dirichlet Multinomial Mixture model is returned. 
-	- It outputs the estimated proportion coefficient of each cell type (first k columns for k various cell types)and the ambient cell types(last column).
+	- The format of the cell type file should have two columns, the first column is barcode, the 2nd column contains the cell type infomation. Estimated proportion coeffcient of the Multinomial Mixture model is returned. 
+	- It outputs the estimated proportion coefficient of each cell type (first k columns for k various cell types) and the ambient cell types(last column).
 	```ruby
 	celltype = read.csv("/path_to_celltype.csv",row.names=1)
 	prop = SiftCellBayes(workingdir,celltype)
