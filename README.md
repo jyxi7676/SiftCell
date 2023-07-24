@@ -17,7 +17,7 @@ Explanation of separate main functions are shown as following:
 	- It leverages results from *SiftCell-Shuffle* and applies a gradient boosting classification algorithm [XGBoost](https://www.kdd.org/kdd2016/papers/files/rfp0697-chenAemb.pdf) by assigning randomized droplets as negative labels (representing ambient RNAs) and droplets confidently predicted to contain cells as positive labels using an overdispersion test.
 	- It takes working directory as input, and output a txt file with cell-containing droplets.
 	- It allows the user to set flag genes to to avoid including unintended cell types (i.e. platelets), see pacakge documentation for details.
-	- It also allows a manually curated version of training labels by leveraging visualizations from SiftCell-Shuffle. See example format of [manual version of training labels](./examples/manual_labels.csv)  manual version of training labels.
+	- It also allows a manually curated version of training labels by leveraging visualizations from SiftCell-Shuffle. See example format of [manual version of training labels](./examples/training_labels_example.csv)  manual version of training labels.
 	```ruby
 	SiftCellBoost(workingdir)
 	```
