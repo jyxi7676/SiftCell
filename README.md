@@ -1,5 +1,5 @@
 # SiftCell
-SiftCell is a robust framework to identify and filter cell-missing droplets from scRNA-seq data. The SiftCell R package includes three tools: *SiftCell-Shuffle* to visualize cell-containing and cell-missing droplets in manifold space with randomization, *SiftCell-Boost* to classify between two types of droplets, and *SiftCell-Mix* to quantify the contribution of ambient RNAs for each droplet.  For details, please refer to [SiftCell paper](http://xxx)
+SiftCell is a robust framework to identify and filter cell-missing droplets from scRNA-seq data. The SiftCell R package includes three tools: *SiftCell-Shuffle* to visualize cell-containing and cell-missing droplets in manifold space with randomization, *SiftCell-Boost* to classify between two types of droplets, and *SiftCell-Mix* to quantify the contribution of ambient RNAs for each droplet.  For details, please refer to [SiftCell paper](https://www.cell.com/cell-systems/fulltext/S2405-4712(23)00155-2)
 
 ---
 
